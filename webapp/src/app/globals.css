@@ -25,3 +25,11 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.drawer-text {
+  @apply text-xl px-1 border rounded border-transparent
+}
+
+.drawer-text:hover {
+  @apply bg-slate-700 cursor-default
+}
