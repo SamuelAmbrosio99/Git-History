@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import GeneralDrawer from '@/components/generalDrawer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +17,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="flex flex-col min-h-screen">
+        <GeneralDrawer />
+        <div className="flex-1 overflow-hidden">
+          <div className="container mx-auto h-full flex flex-col">
+            <main className="flex h-screen pt-16 pb-4">
+              <div className="w-full">
+                {children}
+              </div>
+            </main>
+          </div>
+        </div>
+      </body>
     </html>
   )
 }
