@@ -6,12 +6,11 @@ const CommitList = ({ expandList }: commitList) => {
     return (
         <div className="card bg-base-100 shadow-xl mx-4 flex-1">
             <div className="card-body p-3">
-                <div className="card-title justify-between mx-4">
-                    <h5>Commits</h5>
-                    <div className="tooltip hover:cursor-pointer" data-tip="Expand List">
+                <div className="card-title flex items-center justify-center">
+                    <h5 className="flex-none">Commits</h5>
+                    <div className="tooltip hover:cursor-pointer flex items-center justify-center tooltip-right" data-tip="Expand">
                         <ChevronUpIcon className="w-8 h-8 animate-bounce" onClick={expandList} />
                     </div>
-                    <div>&nbsp;</div>
                 </div>
                 <table className="table overflow-y-auto mt-0">
                     {/* head */}

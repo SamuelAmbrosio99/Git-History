@@ -7,10 +7,10 @@ export interface progressBar {
 export interface statsCard {
     title: string;
     qty: number;
-    results: pRResults[];
+    results: results[];
 }
 
-interface pRResults {
+interface results {
     title: string;
     qty: number;
     progress: number;
