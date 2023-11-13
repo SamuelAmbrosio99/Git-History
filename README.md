@@ -3,7 +3,7 @@ Allows the user to see the git commit history of a repo
 
 To run in local just follow the next steps
 
-1. Clone the monorepo
+1. Clone the monorepo and use dev branch
 2. Run Docker
 3. Put the provided .env into ./api/
 4. Go to the the root folder ./
