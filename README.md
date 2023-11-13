@@ -5,9 +5,10 @@ To run in local just follow the next steps
 
 1. Clone the monorepo and use dev branch
 2. Run Docker
-3. Put the provided .env into ./api/
-4. Go to the the root folder ./
-5. Execute the following command
+3. Unzip the provided .env.zip
+4. Put the unziped .env into ./api/
+5. Go to the the root folder ./
+6. Execute the following command
 
 ```
 docker compose up
