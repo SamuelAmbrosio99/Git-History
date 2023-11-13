@@ -39,6 +39,8 @@ export const Modal = ({ show, setShow, children }: ModalProps) => {
     )
 }
 
+Modal.displayName = 'Modal'
+
 const ModalBody = forwardRef<HTMLInputElement, ModalBodyProps>((props, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -90,6 +92,8 @@ const ModalBody = forwardRef<HTMLInputElement, ModalBodyProps>((props, ref) => {
         </div>
     );
 });
+
+ModalBody.displayName = 'ModalBody'
 
 export const ChangeUserModal = () => {
     const { user, setUser, showUserChange, setShowUserChange } = useApi()

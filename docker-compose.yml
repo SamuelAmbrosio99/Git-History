@@ -1,0 +1,23 @@
+version: '1'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    working_dir: /app/api
+    command: npm run start:dev
+    volumes:
+      - ./api:/app/api
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    working_dir: /app/webapp
+    command: /bin/sh -c "npm run build && npm start"
+    volumes:
+      - ./webapp:/app/webapp

@@ -7,13 +7,15 @@ import { AppConfigService } from './config/config.service';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { CoreModule } from './core/core.module';
 import { HttpModule } from '@nestjs/axios';
+import { CommitsModule } from './commits/commits.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     StatsModule,
     CoreModule,
-    HttpModule
+    HttpModule,
+    CommitsModule
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService, AuthMiddleware],

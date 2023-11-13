@@ -33,7 +33,7 @@ export default function Home() {
                 <Stats />
               </div>
               <div className="mx-4">
-                <CommitList expandList={handleExpandList} listIsExpanded={listIsExpanded}/>
+                <CommitList />
               </div>
             </div>
           </main>
