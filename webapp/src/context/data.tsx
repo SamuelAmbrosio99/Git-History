@@ -1,21 +1,26 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, use } from 'react';
   import { getData } from '@/services/api';
 import { statsCard } from '@/models/stats';
+import { commit } from '@/models/commits';
   
   interface ApiContextProps {
     user: string;
     repo: string;
-    commits: any | null;
+    commits: commit[] | null;
     stats: statsCard[];
     loading: boolean;
     error: Error | null;
     showUserChange: boolean;
     showRepoChange: boolean;
+    pages: Array<number>;
+    lastPage: number;
+    currentPage: number;
     handleLoading: () => void;
     setUser: React.Dispatch<React.SetStateAction<string>>;
     setRepo: React.Dispatch<React.SetStateAction<string>>;
     setShowUserChange: React.Dispatch<React.SetStateAction<boolean>>;
     setShowRepoChange: React.Dispatch<React.SetStateAction<boolean>>;
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   }
   
   const ApiContext = createContext<ApiContextProps | undefined>(undefined);
@@ -27,45 +32,52 @@ import { statsCard } from '@/models/stats';
   export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
     const [user, setUser] = useState<string>('vercel');
     const [repo, setRepo] = useState<string>('vercel');
-    const [filter, setFilter] = useState<string>('');
-    const [values, setValues] = useState<any[]>([]);
     const [showUserChange, setShowUserChange] = useState<boolean>(false);
     const [showRepoChange, setShowRepoChange] = useState<boolean>(false);
-    const [commits, setCommits] = useState<any | null>(null);
-    const [stats, setStats] = useState<any | null>([{}, {}, {}]);
+
+    const [stats, setStats] = useState<statsCard[] | any[]>([{}, {}, {}]);
+    const [commits, setCommits] = useState<commit[] | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pages, setPages] = useState<Array<number>>([1, 2, 3, 4, 5]);
+    const [perPage, setPerPage] = useState<number>(5);
+    const [lastPage, setLastPage] = useState<number>(1);
+    
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
+      setLoading(true);
       getStats()
+      getCommits()
+      setLoading(false);
     }, [user, repo]);
 
-    const getStats = async () => {
+    useEffect(() => {
       setLoading(true);
+      getCommits()
+      setLoading(false);
+    }, [currentPage]);
+
+    const getStats = async () => {
       try {
         const data = await getData(`stats?user=${user}&repo=${repo}`);
         setStats(data);
       } catch (error: any) {
         setError(error);
-      } finally {
-        setLoading(false);
+        setStats([{}, {}, {}]);
       }
     }
-  
-    // useEffect(() => {
-    //   const fetchDataFromApi = async () => {
-    //     try {
-    //       const data = await getData('');
-    //       setApiData(data);
-    //     } catch (error: any) {
-    //       setError(error);
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   };
-  
-    //   fetchDataFromApi();
-    // }, []);
+
+    const getCommits = async () => {
+      try {
+        const data = await getData(`commits?user=${user}&repo=${repo}&page=${currentPage}&per_page=${perPage}`);
+        setCommits(data.commits);
+        setPages(data.pages);
+        setLastPage(data.lastPage);
+      } catch (error: any) {
+        setError(error);
+      }
+    }
 
     const handleLoading = () => {
       setLoading(!loading)
@@ -80,11 +92,15 @@ import { statsCard } from '@/models/stats';
       stats,
       loading,
       error,
+      pages,
+      lastPage,
+      currentPage,
       handleLoading,
       setUser,
       setRepo,
       setShowUserChange,
       setShowRepoChange,
+      setCurrentPage
     };
   
     return (
