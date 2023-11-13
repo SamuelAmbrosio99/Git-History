@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AppConfigService } from '../config/config.service';
-import { firstValueFrom } from 'rxjs';
 import { GetStatsDto } from './dtos/get-stats.dto';
 import { GetResultsDto } from './dtos/results.dto';
 import { stats, statsType } from './types/stats.types';
@@ -14,13 +13,19 @@ export class StatsService {
         private readonly configService: AppConfigService,
         private readonly appService: AppService
     ) {}
+
     private readonly url = this.configService.ghUrl;
+
+    private async getTotalCount(url: string): Promise<number> {
+        const response = await this.appService.authGet(url);
+        return this.getTotal(response);
+    }
 
     private getTotal(response: any): number {
         if (!response) {
             return 0;
         }
-        const links = response.headers.link
+        const links = response.headers.link;
         const regex = /page=(\d+)>; rel="last"/;
         const matches = links?.match(regex);
         if (!matches) {
@@ -30,17 +35,16 @@ export class StatsService {
         return parseInt(matches[1], 10);
     }
 
-    private async getResults({user, repo, type}: GetResultsDto): Promise<stats> {
+    private calculateProgress(value: number, total: number): string {
+        return ((value / total) * 100).toFixed(2);
+    }
+
+    private async getResults({ user, repo, type }: GetResultsDto): Promise<stats> {
         const url = (state: string) => `${this.url}${user}/${repo}/${type}?state=${state}&per_page=1&page=1`;
 
-        const totalResponse = await this.appService.authGet(url('all'));
-        const total = this.getTotal(totalResponse);
-
-        const openBranches = await this.appService.authGet(url('open'));
-        const open = this.getTotal(openBranches);
-
-        const closedBranches = await this.appService.authGet(url('closed'));
-        const closed = this.getTotal(closedBranches);
+        const total = await this.getTotalCount(url('all'));
+        const open = await this.getTotalCount(url('open'));
+        const closed = await this.getTotalCount(url('closed'));
 
         return {
             title: statsType[type],
@@ -49,28 +53,24 @@ export class StatsService {
                 {
                     title: 'Open',
                     qty: open,
-                    progress: ((open / total) * 100).toFixed(2),
+                    progress: this.calculateProgress(open, total),
                 },
                 {
                     title: 'Closed',
                     qty: closed,
-                    progress: ((closed / total) * 100).toFixed(2),
+                    progress: this.calculateProgress(closed, total),
                 },
             ],
-        }
+        };
     }
 
-    private async getBranchesResults({user, repo}: GetStatsDto): Promise<stats> {
-        const url = (bProtected: boolean | undefined) => `${this.url}${user}/${repo}/branches?per_page=1&page=1${bProtected ? '&protected=' + bProtected : ''}`;
+    private async getBranchesResults({ user, repo }: GetStatsDto): Promise<stats> {
+        const url = (bProtected: boolean | undefined) =>
+            `${this.url}${user}/${repo}/branches?per_page=1&page=1${bProtected ? '&protected=' + bProtected : ''}`;
 
-        const totalResponse = await this.appService.authGet(url(undefined));
-        const total = this.getTotal(totalResponse);
-
-        const openBranches = await this.appService.authGet(url(false));
-        const open = this.getTotal(openBranches);
-
-        const protectedBranches = await this.appService.authGet(url(true));
-        const protectedResult = this.getTotal(protectedBranches);
+        const total = await this.getTotalCount(url(undefined));
+        const open = await this.getTotalCount(url(false));
+        const protectedResult = await this.getTotalCount(url(true));
 
         return {
             title: statsType.branches,
@@ -79,24 +79,24 @@ export class StatsService {
                 {
                     title: 'Open',
                     qty: open,
-                    progress: ((open / total + protectedResult) * 100).toFixed(2),
+                    progress: this.calculateProgress(open, total + protectedResult),
                 },
                 {
                     title: 'Protected',
                     qty: protectedResult,
-                    progress: ((protectedResult / total + protectedResult) * 100).toFixed(2),
+                    progress: this.calculateProgress(protectedResult, total + protectedResult),
                 },
             ],
-        }
+        };
     }
 
-    async getStats({user, repo}: GetStatsDto): Promise<any> {
-        const pullsResult = await this.getResults({user, repo, type: 'pulls'});
-        const issuesResult = await this.getResults({user, repo, type: 'issues'});
-        const branchesResult = await this.getBranchesResults({user, repo});
-        const result = [pullsResult, issuesResult, branchesResult];
+    async getStats({ user, repo }: GetStatsDto): Promise<any> {
+        const [pullsResult, issuesResult, branchesResult] = await Promise.all([
+            this.getResults({ user, repo, type: 'pulls' }),
+            this.getResults({ user, repo, type: 'issues' }),
+            this.getBranchesResults({ user, repo }),
+        ]);
 
-        return result;
+        return [pullsResult, issuesResult, branchesResult];
     }
-
 }
