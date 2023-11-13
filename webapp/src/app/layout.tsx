@@ -17,12 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen max-h-screen">
         <GeneralDrawer />
         <div className="flex-1 overflow-hidden">
           <div className="container mx-auto h-full flex flex-col">
-            <main className="flex h-screen pt-16 pb-4">
-              <div className="w-full">
+            <main className="flex max-h-screen overflow-auto">
+              <div className="container">
                 {children}
               </div>
             </main>
