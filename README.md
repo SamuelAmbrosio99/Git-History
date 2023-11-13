@@ -17,3 +17,5 @@ docker compose up
 **The project will run with ports 3000 and 3001.**
 
 Open the project opening the url ***[localhost:3000](localhost:3000)***
+
+*** You can change the selected user and repository by clicking on its names in the topbar ***
