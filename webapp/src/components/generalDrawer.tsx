@@ -11,7 +11,6 @@ const DrawerContent = () => {
       <h1 className='drawer-text drawer-text:hover' onClick={() => setShowUserChange(true)}>{user}</h1>
       <h1 className='text-xl px-1 text-slate-600'>/</h1>
       <h1 className='drawer-text drawer-text:hover' onClick={() => setShowRepoChange(true)}>{repo}</h1>
-      <div className="badge badge-outline ml-2 text-slate-700"> Public </div>
     </div>
   )
 }

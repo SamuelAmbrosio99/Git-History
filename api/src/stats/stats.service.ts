@@ -90,7 +90,7 @@ export class StatsService {
         };
     }
 
-    async getStats({ user, repo }: GetStatsDto): Promise<any> {
+    async getStats({ user, repo }: GetStatsDto): Promise<stats[]> {
         const [pullsResult, issuesResult, branchesResult] = await Promise.all([
             this.getResults({ user, repo, type: 'pulls' }),
             this.getResults({ user, repo, type: 'issues' }),

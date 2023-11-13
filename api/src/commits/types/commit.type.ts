@@ -1,20 +1,3 @@
-export interface commitList {
-    expandList: () => void;
-    listIsExpanded: boolean;
-    commits: commit[];
-}
-
-export interface commitTable {
-    commits: commit[];
-}
-
-export interface pages {
-    pages: number[];
-    currentPage: number;
-    lastPage: number;
-    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-}
-
 export interface commit {
     sha: string;
     node_id: string;
@@ -22,8 +5,8 @@ export interface commit {
     url: string;
     html_url: string;
     comments_url: string;
-    author: author;
-    commiter: commiter;
+    author: author[];
+    commiter: commiter[];
     parents: parents[];
 }
 

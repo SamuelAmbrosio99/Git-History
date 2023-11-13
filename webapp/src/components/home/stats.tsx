@@ -55,7 +55,7 @@ const Stats = () => {
     return (
       <div className="grid md:grid-cols-3 md:grid-rows-1 sm:grid-cols-1 sm:grid-rows-3 mt-2">
         {
-            stats.map((data, index) => {
+            stats && stats.length && stats.map((data, index) => {
                 const { title, qty, results } = data;
                 
                 return (
